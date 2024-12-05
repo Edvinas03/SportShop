@@ -1,25 +1,22 @@
 import { Layout } from "@/pages/Layout";
 import Home from "@/pages/HomePage/Home";
+import Products from "@/pages/ProductsPage/Products";
 import SignUp from "@/pages/auth/SignUpPage/SignUp";
 import SignIn from "@/pages/auth/SignInPage/SignIn";
-import { createBrowserRouter, } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { ProtectedRoute } from "@/ProtectedRoute";
-import Students from "@/pages/StudentsPage/Students";
 import Dashboard from "@/pages/admin/DashboardPage/Dashboard";
+import Cart from "@/pages/ShoppingCartPage/Cart";
 
 export function router() {
     return createBrowserRouter([
         {
             path: "/",
-            Component: Layout,
+            element: <Layout />,
             children: [
                 {
                     index: true,
                     Component: Home
-                },
-                {
-                    path: 'students',
-                    element: <ProtectedRoute><Students /></ProtectedRoute >
                 },
                 {
                     path: 'auth/signup',
@@ -31,8 +28,16 @@ export function router() {
                 },
                 {
                     path: 'admin/dashboard',
-                    element: <ProtectedRoute><Dashboard /></ProtectedRoute >
-                }
+                    element: <ProtectedRoute><Dashboard /></ProtectedRoute>
+                },
+                {
+                    path: 'product/:id',
+                    Component: Products
+                },
+                {
+                    path: 'cart',
+                    Component: Cart
+                },
             ]
         },
     ]);

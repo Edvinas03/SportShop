@@ -1,0 +1,3 @@
+interface IGender {
+    name: string;
+}

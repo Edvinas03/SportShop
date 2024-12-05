@@ -1,57 +1,73 @@
-﻿import { Link, Outlet, useFetchers, useNavigation } from "react-router-dom";
-import { HomeModernIcon, AcademicCapIcon, BookOpenIcon, ShareIcon, ServerStackIcon, PresentationChartBarIcon } from '@heroicons/react/24/outline';
+﻿import { Link, Outlet } from "react-router-dom";
+import { HomeModernIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import { useAuth } from "@/hooks/useAuth";
 import { UserRoles } from "@/data/userRoles";
+import { useState, useEffect } from "react";
 
 export function Layout() {
-    const navigation = useNavigation();
-    const fetchers = useFetchers();
-    const { logoutHandler, auth } = useAuth()
-    const fetcherInProgress = fetchers.some((f) =>
-        ["loading", "submitting"].includes(f.state)
-    );
+    const { logoutHandler, auth } = useAuth();
+    const [showButton, setShowButton] = useState(false);
 
-    return <div className='container mx-auto flex flex-col gap-y-2'>
-        <header className='bg-amber-700 text-white p-1'>
-            <div className='text-3xl'>GRADEBOOK</div>
-            <nav>
-                <ul className='flex gap-x-2'>
-                    <li>
-                        <Link to="/">HOME.<HomeModernIcon className="h-6 w-6 text-white-500" /></Link>
-                    </li>
-                    {
-                        auth?.isAuthenticated ? <>
-                            <li>
-                                <Link to="/students">Students.<AcademicCapIcon className="h-6 w-6 text-white-500" /></Link>
-                            </li>
-                            {
-                                auth?.role === UserRoles.Admin ?
+    useEffect(() => {
+        const handleScroll = () => setShowButton(window.scrollY > 300);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    return (
+        <div className='container mx-auto flex flex-col gap-y-4'>
+            <header className='bg-amber-700 text-white p-4 flex justify-between items-center'>
+                <div className='text-3xl font-bold'>Sport Shop</div>
+                <nav>
+                    <ul className='flex gap-x-6 items-center'>
+                        <li>
+                            <Link to="/" className="flex items-center text-lg hover:text-yellow-400">
+                                Pagrindinis <HomeModernIcon className="h-6 w-6 ml-2" />
+                            </Link>
+                        </li>
+                        {auth?.isAuthenticated ? (
+                            <>
+                                {auth?.role === UserRoles.Admin && (
                                     <li>
-                                        <Link to="/admin/dashboard">Admin Panel</Link>
-                                    </li> : null
-                            }
-                            <li>
-                                <button onClick={logoutHandler}>Logout</button>
-                            </li>
-                        </> : <>
-                            <li>
-                                <Link to="/auth/signup">Registration</Link>
-                            </li>
-                            <li>
-                                <Link to="/auth/signin">Login</Link>
-                            </li>
-                        </>
-                    }
-                </ul>
-            </nav>
-        </header>
-        <div>
-            {navigation.state !== "idle" && <div className="m-1">Navigation in progress...</div>}
-            {fetcherInProgress && <div className="m-1">Fetcher in progress...</div>}
+                                        <Link to="/admin/dashboard" className="text-lg hover:text-yellow-400">Admin Panel</Link>
+                                    </li>
+                                )}
+                                <li>
+                                    <button onClick={logoutHandler} className="text-lg hover:text-yellow-400">Atsijungti</button>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li>
+                                    <Link to="/auth/signup" className="text-lg hover:text-yellow-400">Registracija</Link>
+                                </li>
+                                <li>
+                                    <Link to="/auth/signin" className="text-lg hover:text-yellow-400">Prisijungimas</Link>
+                                </li>
+                            </>
+                        )}
+                        <li>
+                            <Link to="/cart" className="flex items-center text-lg hover:text-yellow-400">
+                                Pirkinių krepšelis <ShoppingCartIcon className="h-6 w-6 ml-2" />
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <main className="flex-grow">
+                <Outlet />
+            </main>
+            <footer className='bg-gray-700 text-white text-center p-4'>
+                <div className="text-sm">© 2024 Sport Shop | All rights reserved</div>
+            </footer>
+            {showButton && (
+                <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition"
+                >
+                    Į pradžią
+                </button>
+            )}
         </div>
-        <Outlet />
-        <footer className='bg-gray-500 text-white text-sm flex content-center justify-center items-center h-10'>
-            <div>Panevėžio kolegija</div>
-        </footer>
-    </div>
+    );
 }

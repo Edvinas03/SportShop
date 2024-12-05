@@ -53,7 +53,8 @@ namespace SportShop.Server.Services
             var claims = new List<Claim>
             {
                 new(ClaimTypes.Name, user.UserName ?? string.Empty),
-                new(ClaimTypes.Email, model?.Email ?? string.Empty)
+                new(ClaimTypes.Email, model?.Email ?? string.Empty),
+                new(ClaimTypes.NameIdentifier, user.Id)
             };
 
             var roles = await userManager.GetRolesAsync(user);
@@ -69,7 +70,7 @@ namespace SportShop.Server.Services
             await httpContext.SignInAsync(IdentityConstants.ApplicationScheme,
                 new ClaimsPrincipal(claimsIdentity), authProperties);
 
-            return (1, new AuthDto(true, "Login successful", user.UserName, user.Email, roles[0]));
+            return (1, new AuthDto(true, "Login successful", user.UserName, user.Email, roles[0], user.Id));
         }
 
         public AuthDto CheckSession(HttpContext httpContext)
@@ -79,11 +80,15 @@ namespace SportShop.Server.Services
                 .Where(c => c.Type == ClaimTypes.Role)
                 .Select(c => c.Value)
                 .ToList();
-            if (user.Identity is not { IsAuthenticated: true }) return new AuthDto(false, "User is not authenticated");
+
+            if (user.Identity is not { IsAuthenticated: true })
+                return new AuthDto(false, "User is not authenticated");
 
             var userName = user.Identity.Name;
             var userEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            return new AuthDto(true, "User is authenticated", userName, userEmail, roles[0]);
+            var userId = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            return new AuthDto(true, "User is authenticated", userName, userEmail, roles.FirstOrDefault(), userId);
         }
 
         public async Task Logout(HttpContext httpContext)

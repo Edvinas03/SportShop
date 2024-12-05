@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using SportShop.Server.Data;
 using SportShop.Server.Services;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 var config = builder.Configuration;
@@ -16,8 +15,8 @@ var mysqlConn = $"server=localhost;port=3306;user={mysqlUser};password={mysqlPas
 
 var services = builder.Services;
 services.AddDbContext<AppDbContext>(options =>
-options.UseMySql(mysqlConn, ServerVersion.AutoDetect(mysqlConn)
-));
+    options.UseMySql(mysqlConn, ServerVersion.AutoDetect(mysqlConn))
+);
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -30,7 +29,6 @@ services.AddAntiforgery(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.SuppressXFrameOptionsHeader = false;
-
 });
 
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -63,28 +61,28 @@ services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 5;
-
 });
 
 services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
-    builder.WithOrigins("https://localhost:5173")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
+        builder.WithOrigins("https://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
 
 services.AddControllersWithViews();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddScoped<IGetStudentService, GetStudentService>();
-services.AddScoped<ISaveStudentService, SaveStudentService>();
+
+services.AddScoped<IGetProductService, GetProductService>();
+services.AddScoped<ICartService, CartService>();
 services.AddScoped<IAuthService, AuthService>();
 
-
 var app = builder.Build();
+
 app.UseCors("AllowAll");
 app.UseDefaultFiles();
 //app.UseStaticFiles();
@@ -93,7 +91,11 @@ app.UseDefaultFiles();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SportShop API V1");
+        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+    });
 }
 
 app.UseHttpsRedirection();
@@ -105,9 +107,9 @@ var antiforgery = app.Services.GetRequiredService<IAntiforgery>();
 app.Use((context, next) =>
 {
     if (HttpMethods.IsPost(context.Request.Method) ||
-    HttpMethods.IsDelete(context.Request.Method) ||
-    HttpMethods.IsPut(context.Request.Method) ||
-    HttpMethods.IsPatch(context.Request.Method))
+        HttpMethods.IsDelete(context.Request.Method) ||
+        HttpMethods.IsPut(context.Request.Method) ||
+        HttpMethods.IsPatch(context.Request.Method))
         return next(context);
 
     var tokens = antiforgery.GetAndStoreTokens(context);

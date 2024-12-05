@@ -12,5 +12,5 @@ export function useAuth() {
         navigate('auth/signin'); //Redirect to the login page
     };
 
-    return { logoutHandler, auth }
+    return { logoutHandler, auth, userId: auth?.userId }
 }
