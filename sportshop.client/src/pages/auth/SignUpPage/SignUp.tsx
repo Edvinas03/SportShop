@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form"
+﻿import { useForm } from "react-hook-form"
 import { IUser } from "@/interfaces/IUser";
 import { postApi } from "@/api";
 import { formStyle } from "@/styles/formStyle";
@@ -26,9 +26,9 @@ export default function SignUp() {
         <form onSubmit={handleSubmit(storeUser)} className='flex flex-col gap-3 max-w-xs'>
             {error ? <div className="text-red-800">{error}</div> : null}
             <div>
-                <label htmlFor="userName" className={formStyle.label}>UserName</label>
+                <label htmlFor="userName" className={formStyle.label}>Vartotojo vardas</label>
                 <input id="userName" className={formStyle.input} {...register("userName", {
-                    required: 'UserName is required',
+                    required: 'Neįvestas vartotojo vardas',
                     maxLength: {
                         value: 20, message: 'UserName cannot exceed 20 characters'
                     }
@@ -36,32 +36,32 @@ export default function SignUp() {
                 <ErrorBlock errors={errors} name="userName" />
             </div>
             <div>
-                <label htmlFor="email" className={formStyle.label}>Email</label>
-                <input id="email" className={formStyle.input} type="email" {...register("email", { required: 'Email is required' })} />
+                <label htmlFor="email" className={formStyle.label}>El. paštas</label>
+                <input id="email" className={formStyle.input} type="email" {...register("email", { required: 'Neįvestas El. paštas' })} />
                 <ErrorBlock errors={errors} name="email" />
             </div>
             <div>
-                <label htmlFor="password" className={formStyle.label}>Password</label>
+                <label htmlFor="password" className={formStyle.label}>Slaptažodis</label>
                 <input type="password" id="password" className={formStyle.input} {...register("password", {
-                    required: 'Password is required',
-                    minLength: { value: 5, message: 'Password must be at least 5 characters long.' },
-                    maxLength: { value: 9, message: 'Password cannot exceed 9 characters' }
+                    required: 'Neįvestas slaptažodis',
+                    minLength: { value: 5, message: 'Slaptažodis turi būti bent 5 simbolių ilgio.' },
+                    maxLength: { value: 9, message: 'Slaptažodis negali viršyti 9 simbolių' }
                 })} />
                 <ErrorBlock errors={errors} name="password" />
             </div>
             <div>
-                <label htmlFor="confirm_password" className={formStyle.label}>Confirm password</label>
+                <label htmlFor="confirm_password" className={formStyle.label}>Patvirtinkite slaptažodį</label>
                 <input type="password" id="confirm_password" className={formStyle.input} {...register("confirm_password", {
-                    required: 'Confirm password is required',
+                    required: 'Neįvestas patvirtinimo slaptažodis',
                     validate: (val: string) => {
                         if (watch('password') != val) {
-                            return "Your passwords do not match"
+                            return "Jūsų slaptažodžiai nesutampa"
                         }
                     },
                 })} />
                 <ErrorBlock errors={errors} name="confirm_password" />
             </div>
-            <button className={formStyle.button} type="submit">Create</button>
+            <button className={formStyle.button} type="submit">Sukurti</button>
         </form>
     )
 

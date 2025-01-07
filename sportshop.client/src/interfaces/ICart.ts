@@ -1,14 +1,14 @@
 export interface ICart {
-    id?: number;
+    id: number;
     productId: number;
     title: string;
+    imagePath: string;
     quantity: number;
     price: number;
     userId: string;
     isBought: boolean;
-    canceledAt?: Date;
-    deliveredAt?: Date;
-    createdAt: Date;
-    updatedAt: Date;
-    imagePath?: string;
+    IsCanceled: string;
+    IsDelivered: string;
+    createdAt: string;
+    updatedAt: string;
 }

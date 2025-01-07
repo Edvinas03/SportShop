@@ -1,7 +1,7 @@
 ﻿namespace SportShop.Server.Models.DTOs
 {
     public record ProductDto(
-        short Id,
+short Id,
         string Title,
         string Category,
         string Gender,
@@ -11,7 +11,7 @@
         string Size1,
         string Size2,
         string Size3,
-        ImageDto Image,
+        List<ImageDto> Images,
         DateTime CreatedAt,
         DateTime UpdatedAt
     );

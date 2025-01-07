@@ -70,7 +70,7 @@ namespace SportShop.Server.Services
             await httpContext.SignInAsync(IdentityConstants.ApplicationScheme,
                 new ClaimsPrincipal(claimsIdentity), authProperties);
 
-            return (1, new AuthDto(true, "Login successful", user.UserName, user.Email, roles[0], user.Id));
+            return (1, new AuthDto(true, "Login successful", user.UserName, user.Email, roles[0]));
         }
 
         public AuthDto CheckSession(HttpContext httpContext)
@@ -88,7 +88,7 @@ namespace SportShop.Server.Services
             var userEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             var userId = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            return new AuthDto(true, "User is authenticated", userName, userEmail, roles.FirstOrDefault(), userId);
+            return new AuthDto(true, "User is authenticated", userName, userEmail, roles.FirstOrDefault());
         }
 
         public async Task Logout(HttpContext httpContext)
