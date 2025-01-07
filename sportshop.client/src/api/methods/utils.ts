@@ -1,4 +1,4 @@
-export type ApiResponse<T> = T & { error?: string };
+﻿export type ApiResponse<T> = T & { error?: string };
 
 export function getFullUrl(endpoint: string): string {
     return `/api/${endpoint}`;
@@ -27,7 +27,7 @@ export async function fetchRequest<T>(
         if (!response.ok) {
             const errorText = await response.text();
             if (response.status === 400 || response.status === 403) {
-                alert('Problem with XSRF token or permissions');
+                alert('Neteisinga duomenų validacija');
             }
             return { error: errorText } as ApiResponse<T>;
         }

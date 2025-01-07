@@ -10,7 +10,7 @@ export interface IProduct {
     size1: string
     size2: string
     size3: string
-    image: IImage
+    images: { path: string; title: string }[];
     createdAt: string
     updatedAt: string
 }

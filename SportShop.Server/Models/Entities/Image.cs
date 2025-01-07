@@ -8,7 +8,7 @@ namespace SportShop.Server.Models.Entities
         [MaxLength(100)] public string Path { get; private set; } = path;
         [MaxLength(100)] public string Title { get; private set; } = title;
 
-        public Product Product { get; set; }
+        public required Product Product { get; set; }
 
         public void SetValues(short productId, string path, string title)
     => (ProductId, Path, Title) = (productId, path, title);

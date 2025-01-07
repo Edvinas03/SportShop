@@ -13,7 +13,7 @@ namespace SportShop.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 4,
+            [FromQuery] int pageSize = 10,
             [FromQuery] string? category = null,
             [FromQuery] string? gender = null,
             [FromQuery] decimal? minPrice = null,

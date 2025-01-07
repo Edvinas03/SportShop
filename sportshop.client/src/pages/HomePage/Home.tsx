@@ -8,7 +8,7 @@ export default function Home() {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
-    const pageSize = 4;
+    const pageSize = 10;
     const [category, setCategory] = useState<string | null>(null);
     const [gender, setGender] = useState<string | null>(null);
     const [minPrice, setMinPrice] = useState<number | null>(null);
@@ -68,7 +68,7 @@ export default function Home() {
         }
     };
 
-    if (loading && page === 1) return <div className="text-center py-8">Loading...</div>;
+    if (loading && page === 1) return <div className="text-center py-8">Įkeliama...</div>;
 
     return (
         <div className="container mx-auto p-4">
@@ -143,8 +143,8 @@ export default function Home() {
                         <div className="relative">
                             <Link to={`/product/${product.id}`}>
                                 <img
-                                    src={`/images/${product.image.path}`}
-                                    alt={product.image.title}
+                                    src={`/images/${product.images?.[0]?.path || 'default.jpg'}`}
+                                    alt={product.title}
                                     className="w-full h-56 object-contain rounded-md"
                                 />
                             </Link>

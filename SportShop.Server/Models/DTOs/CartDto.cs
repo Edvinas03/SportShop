@@ -10,7 +10,7 @@ public class CartDto
     public string ImagePath { get; set; }
     public short Quantity { get; set; }
     public decimal Price { get; set; }
-    public string UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public bool IsBought { get; set; }
     public DateTime? CanceledAt { get; set; }
     public DateTime? DeliveredAt { get; set; }

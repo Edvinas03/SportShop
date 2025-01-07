@@ -1,5 +1,5 @@
 ﻿import { Link, Outlet } from "react-router-dom";
-import { HomeModernIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { HomeModernIcon, ShoppingCartIcon, UserIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from "@/hooks/useAuth";
 import { UserRoles } from "@/data/userRoles";
 import { useState, useEffect } from "react";
@@ -29,20 +29,21 @@ export function Layout() {
                             <>
                                 {auth?.role === UserRoles.Admin && (
                                     <li>
-                                        <Link to="/admin/dashboard" className="text-lg hover:text-yellow-400">Admin Panel</Link>
+                                        <Link to="/admin/dashboard" className="flex items-center text-lg hover:text-yellow-400">Administratoriaus skydelis</Link>
                                     </li>
                                 )}
                                 <li>
-                                    <button onClick={logoutHandler} className="text-lg hover:text-yellow-400">Atsijungti</button>
+                                    <button onClick={logoutHandler} className="flex items-center text-lg hover:text-yellow-400">
+                                        Atsijungti <ArrowRightStartOnRectangleIcon className="h-6 w-6 ml-2" />
+                                    </button>
                                 </li>
                             </>
                         ) : (
                             <>
                                 <li>
-                                    <Link to="/auth/signup" className="text-lg hover:text-yellow-400">Registracija</Link>
-                                </li>
-                                <li>
-                                    <Link to="/auth/signin" className="text-lg hover:text-yellow-400">Prisijungimas</Link>
+                                        <Link to="/auth/signin" className="flex items-center text-lg hover:text-yellow-400">
+                                            Prisijungimas <UserIcon className="h-6 w-6 ml-2" />
+                                        </Link>
                                 </li>
                             </>
                         )}

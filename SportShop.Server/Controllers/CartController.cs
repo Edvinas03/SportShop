@@ -10,19 +10,24 @@ namespace SportShop.Server.Controllers
     public class CartController(ICartService cartService) : ControllerBase
     {
         [HttpPost("add")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add([FromBody] CartDto dto)
         {
             if (dto == null) return BadRequest("Invalid cart data.");
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) return Unauthorized("User not logged in.");
-
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            { 
+            return Unauthorized("User not logged in.");
+            }
             dto.UserId = userId;
+
             await cartService.Add(dto);
             return Ok("Item added to cart.");
         }
 
         [HttpPut("update")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update([FromBody] List<CartDto> dtoList)
         {
             if (dtoList == null || !dtoList.Any())
@@ -35,6 +40,7 @@ namespace SportShop.Server.Controllers
         }
 
         [HttpGet("get")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Get([FromQuery] CartFilterDto dto)
         {
             if (dto == null) return BadRequest("Invalid filter data.");
@@ -50,6 +56,7 @@ namespace SportShop.Server.Controllers
         }
 
         [HttpDelete("remove")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove([FromQuery] int cartId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -90,11 +90,11 @@ namespace SportShop.Server.Services
             return MapDto(product);
         }
 
-        private ProductDto MapDto(Product product)
+        public ProductDto MapDto(Product product)
         {
-            var imageDto = product.Images.Any()
-                ? new ImageDto(product.Images.First().Path, product.Images.First().Title)
-                : new ImageDto(string.Empty, string.Empty);
+            var imageDtos = product.Images
+                .Select(image => new ImageDto(image.Path, image.Title))
+                .ToList();
 
             return new ProductDto(
                 product.Id,
@@ -107,7 +107,7 @@ namespace SportShop.Server.Services
                 product.Size1,
                 product.Size2,
                 product.Size3,
-                imageDto,
+                imageDtos,
                 product.CreatedAt,
                 product.UpdatedAt
             );
