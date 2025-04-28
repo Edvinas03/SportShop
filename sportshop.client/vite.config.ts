@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import fs from 'fs';
@@ -7,27 +6,42 @@ import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
 
-const baseFolder =
-    env.APPDATA !== undefined && env.APPDATA !== ''
-        ? `${env.APPDATA}/ASP.NET/https`
-        : `${env.HOME}/.aspnet/https`;
+// Only apply HTTPS certificate generation in development mode
+const isProduction = process.env.NODE_ENV === 'production';
 
-const certificateName = "sportshop.client";
-const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
-const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
+// HTTPS configuration
+let httpsConfig = null;
 
-if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
-    if (0 !== child_process.spawnSync('dotnet', [
-        'dev-certs',
-        'https',
-        '--export-path',
-        certFilePath,
-        '--format',
-        'Pem',
-        '--no-password',
-    ], { stdio: 'inherit', }).status) {
-        throw new Error("Could not create certificate.");
+if (!isProduction) {
+    const baseFolder =
+        env.APPDATA !== undefined && env.APPDATA !== ''
+            ? `${env.APPDATA}/ASP.NET/https`
+            : `${env.HOME}/.aspnet/https`;
+
+    const certificateName = "sportshop.client";
+    const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
+    const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
+
+    // Only try to create certificates in development mode
+    if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
+        if (0 !== child_process.spawnSync('dotnet', [
+            'dev-certs',
+            'https',
+            '--export-path',
+            certFilePath,
+            '--format',
+            'Pem',
+            '--no-password',
+        ], { stdio: 'inherit', }).status) {
+            throw new Error("Could not create certificate.");
+        }
     }
+
+    // Set HTTPS configuration only for development
+    httpsConfig = {
+        key: fs.readFileSync(keyFilePath),
+        cert: fs.readFileSync(certFilePath),
+    };
 }
 
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
@@ -49,9 +63,6 @@ export default defineConfig({
             }
         },
         port: 5173,
-        https: {
-            key: fs.readFileSync(keyFilePath),
-            cert: fs.readFileSync(certFilePath),
-        }
+        https: httpsConfig
     }
 })
