@@ -1,4 +1,4 @@
-name: Build and Deploy SportShop App
+﻿name: Build and Deploy SportShop App
 
 on:
   push:
@@ -44,11 +44,20 @@ jobs:
         }
       shell: pwsh
 
-    - name: Copy frontend build to backend wwwroot
+    - name: Copy frontend build (Vite) to backend wwwroot
       shell: pwsh
       run: |
-        New-Item -ItemType Directory -Force -Path "${{ env.BACKEND_DIR }}\wwwroot"
-        Copy-Item -Path "${{ env.FRONTEND_DIR }}\build\*" -Destination "${{ env.BACKEND_DIR }}\wwwroot" -Recurse -Force
+         $frontendDist = "${{ env.FRONTEND_DIR }}/dist"
+            $backendWwwroot = "${{ env.BACKEND_DIR }}/wwwroot"
+
+          if (-Not (Test-Path $frontendDist)) {
+         Write-Error "❌ Vite build output folder not found at $frontendDist"
+         exit 1
+         }
+
+         mkdir $backendWwwroot -Force
+         Copy-Item "$frontendDist/*" -Destination $backendWwwroot -Recurse -Force
+
 
     - name: Restore and publish .NET backend
       working-directory: ${{ env.BACKEND_DIR }}
