@@ -30,34 +30,31 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install and build frontend (React)
+    - name: Install and build frontend (Vite + React)
       working-directory: ${{ env.FRONTEND_DIR }}
       run: |
         npm install
         npm run build
 
-    - name: Debug build directory exists
+    - name: Check Vite build output exists
+      shell: pwsh
       run: |
-        if (-Not (Test-Path "${{ env.FRONTEND_DIR }}\build")) {
-          Write-Error "React build folder not found. Check npm build output."
+        if (-Not (Test-Path "${{ env.FRONTEND_DIR }}\dist")) {
+          Write-Error "❌ Vite build folder not found. Check npm run build output."
           exit 1
         }
-      shell: pwsh
 
-    - name: Copy frontend build (Vite) to backend wwwroot
+    - name: Copy frontend build to backend wwwroot
       shell: pwsh
       run: |
-         $frontendDist = "${{ env.FRONTEND_DIR }}/dist"
-            $backendWwwroot = "${{ env.BACKEND_DIR }}/wwwroot"
+        $frontendDist = "${{ env.FRONTEND_DIR }}\dist"
+        $backendWwwroot = "${{ env.BACKEND_DIR }}\wwwroot"
 
-          if (-Not (Test-Path $frontendDist)) {
-         Write-Error "❌ Vite build output folder not found at $frontendDist"
-         exit 1
-         }
+        if (-Not (Test-Path $backendWwwroot)) {
+          New-Item -ItemType Directory -Path $backendWwwroot -Force
+        }
 
-         mkdir $backendWwwroot -Force
-         Copy-Item "$frontendDist/*" -Destination $backendWwwroot -Recurse -Force
-
+        Copy-Item "$frontendDist\*" -Destination $backendWwwroot -Recurse -Force
 
     - name: Restore and publish .NET backend
       working-directory: ${{ env.BACKEND_DIR }}
