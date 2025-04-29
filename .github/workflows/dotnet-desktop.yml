@@ -60,7 +60,7 @@ jobs:
       working-directory: ${{ env.BACKEND_DIR }}
       run: |
         dotnet restore
-        dotnet publish --configuration Release --output ../publish
+        dotnet publish --configuration Release --output publish
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
