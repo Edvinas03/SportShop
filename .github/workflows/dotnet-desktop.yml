@@ -1,4 +1,4 @@
-        name: Build and Deploy SportShop App
+name: Build and Deploy SportShop App
 
 on:
   push:
