@@ -36,10 +36,19 @@ jobs:
         npm install
         npm run build
 
-    - name: Copy frontend build to backend wwwroot
+    - name: Debug build directory exists
       run: |
-        mkdir -p ${{ env.BACKEND_DIR }}/wwwroot
-        cp -r ${{ env.FRONTEND_DIR }}/build/* ${{ env.BACKEND_DIR }}/wwwroot/
+        if (-Not (Test-Path "${{ env.FRONTEND_DIR }}\build")) {
+          Write-Error "React build folder not found. Check npm build output."
+          exit 1
+        }
+      shell: pwsh
+
+    - name: Copy frontend build to backend wwwroot
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path "${{ env.BACKEND_DIR }}\wwwroot"
+        Copy-Item -Path "${{ env.FRONTEND_DIR }}\build\*" -Destination "${{ env.BACKEND_DIR }}\wwwroot" -Recurse -Force
 
     - name: Restore and publish .NET backend
       working-directory: ${{ env.BACKEND_DIR }}
@@ -53,4 +62,3 @@ jobs:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: ${{ env.PUBLISH_DIR }}
-
