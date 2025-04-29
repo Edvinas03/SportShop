@@ -64,5 +64,9 @@ export default defineConfig({
         },
         port: 5173,
         https: httpsConfig
-    }
+    },
+      build: {
+        outDir: 'dist',
+        emptyOutDir: true
+    },
 })
