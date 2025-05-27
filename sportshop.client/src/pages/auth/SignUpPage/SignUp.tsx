@@ -30,7 +30,7 @@ export default function SignUp() {
                 <input id="userName" className={formStyle.input} {...register("userName", {
                     required: 'Neįvestas vartotojo vardas',
                     maxLength: {
-                        value: 20, message: 'UserName cannot exceed 20 characters'
+                        value: 20, message: 'Vartotojo vardas negali būti ilgesnis kaip 20 ženklų'
                     }
                 })} />
                 <ErrorBlock errors={errors} name="userName" />
