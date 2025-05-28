@@ -5,7 +5,7 @@ import { IProduct } from "@/interfaces/IProduct";
 import { getApi } from "@/api";
 import axios from "axios";
 import { Modal } from "@/pages/components/Modal";
-import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -188,7 +188,7 @@ export default function ProductDetails() {
                             onClick={closeEnlargedImage}
                             className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none"
                         >
-                            <ChevronLeftIcon className="h-6 w-6 text-black" />
+                            <XMarkIcon className="h-6 w-6 text-black" />
                         </button>
 
                         <button
