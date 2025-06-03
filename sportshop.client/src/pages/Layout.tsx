@@ -1,5 +1,4 @@
 ﻿import { Link, Outlet, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import {
     HomeModernIcon,
     ShoppingCartIcon,
@@ -15,12 +14,19 @@ export function Layout() {
     const location = useLocation();
     const { logoutHandler, auth } = useAuth();
     const [showButton, setShowButton] = useState(false);
+    const [pageReady, setPageReady] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setShowButton(window.scrollY > 300);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    useEffect(() => {
+        setPageReady(false);
+        const timeout = setTimeout(() => setPageReady(true), 50);
+        return () => clearTimeout(timeout);
+    }, [location.pathname]);
 
     return (
         <div className="container mx-auto flex flex-col min-h-screen gap-y-6 font-sans">
@@ -89,17 +95,12 @@ export function Layout() {
             </header>
 
             <main className="flex-grow p-6 bg-gradient-to-b from-white to-blue-50 rounded-lg shadow-inner">
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                        key={location.pathname}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{}}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                    >
-                        <Outlet />
-                    </motion.div>
-                </AnimatePresence>
+                <div
+                    className={`transition-all duration-300 ease-in-out ${pageReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+                        }`}
+                >
+                    <Outlet />
+                </div>
             </main>
 
             <footer className="bg-blue-900 text-blue-100 text-center py-4 mt-6 rounded-t-lg shadow-inner select-none">
