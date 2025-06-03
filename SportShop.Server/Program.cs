@@ -8,16 +8,24 @@ using SportShop.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var config = builder.Configuration;
-//var mysqlDb = config["MySQL:Db"];
-//var mysqlUser = config["MySQL:User"];
-//var mysqlPassword = config["MySQL:Password"];
-//var mysqlConn = $"server=localhost;port=3306;user={mysqlUser};password={mysqlPassword};database={mysqlDb};CharSet=utf8;TreatTinyAsBoolean=false";
-var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
-
+var config = builder.Configuration;
 var services = builder.Services;
+string connectionString;
+
+if (builder.Environment.IsDevelopment())
+{
+    var mysqlDb = config["MySQL:Db"];
+    var mysqlUser = config["MySQL:User"];
+    var mysqlPassword = config["MySQL:Password"];
+    connectionString = $"server=localhost;port=3306;user={mysqlUser};password={mysqlPassword};database={mysqlDb};CharSet=utf8;TreatTinyAsBoolean=false";
+}
+else
+{
+    connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING")!;
+}
+
 services.AddDbContext<AppDbContext>(options =>
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
