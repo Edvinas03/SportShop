@@ -6,6 +6,7 @@ import { getApi } from "@/api";
 import axios from "axios";
 import { Modal } from "@/pages/components/Modal";
 import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -18,8 +19,24 @@ export default function ProductDetails() {
     const [visibleModal, setVisibleModal] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const auth = useStore((state) => state.auth);
+
+    function getGenderDisplay(gender: string | null | undefined): string {
+        switch (gender) {
+            case "Men":
+                return "Vyrams";
+            case "Wo":
+                return "Moterims";
+            case "Unisex":
+                return "Visiems";
+            default:
+                return "Nežinoma";
+        }
+    }
 
     useEffect(() => {
         if (id) {
@@ -48,6 +65,13 @@ export default function ProductDetails() {
             return;
         }
 
+        if (!selectedSize) {
+            setModalTitle("Pasirinkite dydį");
+            setModalContent(<div>Prašome pasirinkti prekės dydį.</div>);
+            setVisibleModal(true);
+            return;
+        }
+
         try {
             const cartItem = {
                 productId: product.id,
@@ -55,6 +79,7 @@ export default function ProductDetails() {
                 imagePath: selectedImage,
                 price: product.price,
                 quantity: 1,
+                size: selectedSize,
                 isBought: false,
                 isCanceled: null,
                 isDelivered: null,
@@ -99,39 +124,44 @@ export default function ProductDetails() {
         <div className="container mx-auto p-8">
             <div className="flex flex-col md:flex-row gap-8">
                 <div className="md:w-1/2">
-                    <div className="relative w-full h-96 mb-4">
-                       
-                        <button
-                            onClick={prevImage}
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none"
-                        >
-                            <ChevronLeftIcon className="h-6 w-6 text-black" />
-                        </button>
-
+                    <button
+                        onClick={() => navigate({ pathname: "/", search: location.search })}
+                        className="mb-4 text-blue-600 hover:underline"
+                    >
+                        ← Grįžti į katalogą
+                    </button>
+                    <div className="relative w-full h-96 mb-4 rounded-lg overflow-hidden border shadow-md">
                         {selectedImage ? (
                             <img
                                 src={`/images/${selectedImage}`}
                                 alt={product.title}
-                                className="w-full h-full object-contain rounded-lg shadow-lg"
+                                className="w-full h-full object-contain bg-white"
                             />
                         ) : (
-                            <div className="text-gray-500 flex items-center justify-center h-full">
-                                No image available
+                            <div className="flex items-center justify-center h-full text-gray-400">
+                                Nėra nuotraukos
                             </div>
                         )}
 
                         <button
-                            onClick={nextImage}
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none"
+                            onClick={prevImage}
+                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100"
                         >
-                            <ChevronRightIcon className="h-6 w-6 text-black" />
+                            <ChevronLeftIcon className="h-6 w-6 text-gray-700" />
+                        </button>
+
+                        <button
+                            onClick={nextImage}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+                        >
+                            <ChevronRightIcon className="h-6 w-6 text-gray-700" />
                         </button>
 
                         <button
                             onClick={() => setIsEnlarged(true)}
-                            className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none"
+                            className="absolute top-2 right-2 bg-white p-2 rounded-full shadow hover:bg-gray-100"
                         >
-                            <MagnifyingGlassIcon className="h-6 w-6 text-gray-800" />
+                            <MagnifyingGlassIcon className="h-6 w-6 text-gray-700" />
                         </button>
                     </div>
 
@@ -142,8 +172,7 @@ export default function ProductDetails() {
                                     key={idx}
                                     src={`/images/${image.path}`}
                                     alt={`${product.title} image ${idx + 1}`}
-                                    className={`w-24 h-24 object-cover rounded-lg cursor-pointer ${selectedImage === image.path ? "border-4 border-blue-500" : "border"
-                                        }`}
+                                    className={`w-24 h-24 object-cover rounded-lg cursor-pointer transition-all duration-200 hover:scale-105 shadow-md ${selectedImage === image.path ? "ring-4 ring-blue-400" : "ring-1 ring-gray-200"}`}
                                     onClick={() => {
                                         setSelectedImage(image.path);
                                         setCurrentImageIndex(idx);
@@ -157,15 +186,34 @@ export default function ProductDetails() {
                 </div>
 
                 <div className="md:w-1/2 space-y-6">
-                    <h1 className="text-3xl font-bold">{product.title}</h1>
+                    <h1 className="text-4xl font-extrabold text-gray-900 drop-shadow-sm">{product.title}</h1>
 
-                    <div className="text-xl font-semibold text-gray-800">Kaina: {product.price} €</div>
-                    <div className="text-lg text-gray-600">Lytis: {product.gender}</div>
-                    <div className="text-gray-700">{product.description}</div>
-
+                    <div className="text-2xl font-bold text-blue-700 mt-2">
+                        Kaina: <span className="text-green-600">{product.price} €</span>
+                    </div>
+                    <div className="mt-2 inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+                        {getGenderDisplay(product.gender)}
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg border mt-4 shadow-inner text-gray-700 leading-relaxed">
+                        {product.description}
+                    </div>
+                    <div className="space-x-2">
+                        {[product.size1, product.size2, product.size3].filter(Boolean).map((size) => (
+                            <button
+                                key={size}
+                                className={`px-4 py-2 border rounded-full transition ${selectedSize === size
+                                        ? "bg-blue-500 text-white border-blue-500"
+                                        : "bg-white text-gray-700 hover:bg-blue-100"
+                                    }`}
+                                onClick={() => setSelectedSize(size!)}
+                            >
+                                {size}
+                            </button>
+                        ))}
+                    </div>
                     <button
                         onClick={handleAddToCart}
-                        className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-600 transition"
+                        className="mt-4 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105"
                     >
                         Pridėti į krepšelį
                     </button>

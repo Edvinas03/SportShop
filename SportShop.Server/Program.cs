@@ -90,6 +90,7 @@ services.AddSwaggerGen();
 services.AddScoped<IGetProductService, GetProductService>();
 services.AddScoped<ICartService, CartService>();
 services.AddScoped<IAuthService, AuthService>();
+services.AddScoped<ICreateProductService, CreateProductService>();
 
 var app = builder.Build();
 
@@ -97,14 +98,13 @@ app.UseCors("AllowAll");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SportShop API V1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+        c.RoutePrefix = string.Empty;
     });
 }
 

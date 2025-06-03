@@ -10,7 +10,7 @@ public class CartService(AppDbContext context) : ICartService
     public async Task Add(CartDto dto)
     {
         var cartItem = await context.CartItems
-            .FirstOrDefaultAsync(c => c.UserId == dto.UserId && c.ProductId == dto.ProductId);
+            .FirstOrDefaultAsync(c => c.UserId == dto.UserId && c.ProductId == dto.ProductId && c.Size == dto.Size);
 
         if (cartItem == null)
         {
@@ -23,6 +23,7 @@ public class CartService(AppDbContext context) : ICartService
                 UserId = dto.UserId,
                 ImagePath = dto.ImagePath,
                 IsBought = dto.IsBought,
+                Size = dto.Size,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -42,7 +43,7 @@ public class CartService(AppDbContext context) : ICartService
         foreach (var dto in dtoList)
         {
             var cartItem = await context.CartItems
-                .FirstOrDefaultAsync(c => c.UserId == dto.UserId && c.ProductId == dto.ProductId);
+                .FirstOrDefaultAsync(c => c.UserId == dto.UserId && c.ProductId == dto.ProductId && c.Size == dto.Size);
 
             if (cartItem != null)
             {
@@ -99,6 +100,7 @@ public class CartService(AppDbContext context) : ICartService
             IsBought = c.IsBought,
             CanceledAt = c.CanceledAt,
             DeliveredAt = c.DeliveredAt,
+            Size = c.Size,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt
         }).ToList();

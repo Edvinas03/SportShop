@@ -7,6 +7,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { ProtectedRoute } from "@/ProtectedRoute";
 import Dashboard from "@/pages/admin/DashboardPage/Dashboard";
 import Cart from "@/pages/ShoppingCartPage/Cart";
+import Checkout from "@/pages/CheckoutPage/Checkout";
 
 export function router() {
     return createBrowserRouter([
@@ -38,6 +39,10 @@ export function router() {
                     path: 'cart',
                     Component: Cart
                 },
+                {
+                    path: 'checkout',
+                    Component: Checkout
+                }
             ]
         },
     ]);

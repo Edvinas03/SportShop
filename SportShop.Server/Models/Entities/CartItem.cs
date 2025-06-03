@@ -10,6 +10,7 @@ public class CartItem : Entity<int>
     public string UserId { get; set; }
     public string ImagePath { get; set; }
     public bool IsBought { get; set; }
+    public string Size { get; set; } = string.Empty;
     public DateTime? CanceledAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
     public DateTime CreatedAt { get; set; }

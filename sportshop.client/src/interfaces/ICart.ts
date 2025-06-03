@@ -6,6 +6,10 @@ export interface ICart {
     quantity: number;
     price: number;
     userId: string;
+    size?: string;
+    size1?: string;
+    size2?: string;
+    size3?: string;
     isBought: boolean;
     IsCanceled: string;
     IsDelivered: string;

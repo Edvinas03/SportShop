@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { IProduct } from "@/interfaces/IProduct";
 import { getApi } from "@/api";
 
@@ -9,18 +9,26 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
     const pageSize = 10;
-    const [category, setCategory] = useState<string | null>(null);
-    const [gender, setGender] = useState<string | null>(null);
-    const [minPrice, setMinPrice] = useState<number | null>(null);
-    const [maxPrice, setMaxPrice] = useState<number | null>(null);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const category = searchParams.get("category");
+    const gender = searchParams.get("gender");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+
+    const [localCategory, setLocalCategory] = useState(category || "");
+    const [localGender, setLocalGender] = useState(gender || "");
+    const [localMinPrice, setLocalMinPrice] = useState(minPrice || "");
+    const [localMaxPrice, setLocalMaxPrice] = useState(maxPrice || "");
 
     const fetchProducts = async (currentPage: number) => {
         try {
             let query = `products?page=${currentPage}&pageSize=${pageSize}`;
             if (category) query += `&category=${category}`;
             if (gender) query += `&gender=${gender}`;
-            if (minPrice !== null) query += `&minPrice=${minPrice}`;
-            if (maxPrice !== null) query += `&maxPrice=${maxPrice}`;
+            if (minPrice) query += `&minPrice=${minPrice}`;
+            if (maxPrice) query += `&maxPrice=${maxPrice}`;
 
             const response = await getApi<IProduct[]>(query);
 
@@ -34,15 +42,12 @@ export default function Home() {
                     setHasMoreProducts(false);
                 }
 
-                setProducts((prevProducts) => {
-                    const newProducts = response.filter(
-                        (newProduct) =>
-                            !prevProducts.some((prevProduct) => prevProduct.id === newProduct.id)
+                setProducts((prev) => {
+                    const newItems = response.filter((item) =>
+                        !prev.some((p) => p.id === item.id)
                     );
-                    return [...prevProducts, ...newProducts];
+                    return [...prev, ...newItems];
                 });
-            } else {
-                console.error("Response is not an array");
             }
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -52,14 +57,33 @@ export default function Home() {
     };
 
     useEffect(() => {
-        fetchProducts(page);
-    }, [page]);
-
-    const applyFilters = () => {
         setProducts([]);
         setPage(1);
         setHasMoreProducts(true);
         fetchProducts(1);
+    }, [searchParams]);
+
+    useEffect(() => {
+        if (page > 1) {
+            fetchProducts(page);
+        }
+    }, [page]);
+
+    const applyFilters = () => {
+        const params: any = {};
+        if (localCategory) params.category = localCategory;
+        if (localGender) params.gender = localGender;
+        if (localMinPrice) params.minPrice = localMinPrice;
+        if (localMaxPrice) params.maxPrice = localMaxPrice;
+        setSearchParams(params);
+    };
+
+    const clearFilters = () => {
+        setLocalCategory("");
+        setLocalGender("");
+        setLocalMinPrice("");
+        setLocalMaxPrice("");
+        setSearchParams({});
     };
 
     const loadMore = () => {
@@ -71,17 +95,17 @@ export default function Home() {
     if (loading && page === 1) return <div className="text-center py-8">Įkeliama...</div>;
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+        <div className="container mx-auto px-4 py-6">
+            <h1 className="text-4xl font-extrabold text-center mb-10 text-gray-900 tracking-tight">
                 Prekių sąrašas
             </h1>
 
-            <div className="mb-6">
-                <div className="flex gap-6 justify-center">
+            <div className="mb-8">
+                <div className="flex flex-wrap gap-4 justify-center">
                     <select
-                        value={category || ""}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="p-2 border rounded"
+                        value={localCategory}
+                        onChange={(e) => setLocalCategory(e.target.value)}
+                        className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                         <option value="">Prekių kategorija</option>
                         <option value="Sports">Sportiniai batai</option>
@@ -97,39 +121,46 @@ export default function Home() {
                     </select>
 
                     <select
-                        value={gender || ""}
-                        onChange={(e) => setGender(e.target.value)}
-                        className="p-2 border rounded"
+                        value={localGender}
+                        onChange={(e) => setLocalGender(e.target.value)}
+                        className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                         <option value="">Lytis</option>
                         <option value="Wo">Moterims</option>
                         <option value="Men">Vyrams</option>
-                        <option value="Unisex">Mot/Vyr</option>
+                        <option value="Unisex">Visiems</option>
                     </select>
 
                     <div className="flex gap-2 items-center">
                         <input
                             type="number"
-                            value={minPrice || ""}
-                            onChange={(e) => setMinPrice(Number(e.target.value))}
+                            value={localMinPrice}
+                            onChange={(e) => setLocalMinPrice(e.target.value)}
                             placeholder="Kaina nuo"
-                            className="p-2 border rounded"
+                            className="w-24 p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
-                        <span>-</span>
+                        <span className="text-gray-500">-</span>
                         <input
                             type="number"
-                            value={maxPrice || ""}
-                            onChange={(e) => setMaxPrice(Number(e.target.value))}
+                            value={localMaxPrice}
+                            onChange={(e) => setLocalMaxPrice(e.target.value)}
                             placeholder="Kaina iki"
-                            className="p-2 border rounded"
+                            className="w-24 p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
                     </div>
 
                     <button
                         onClick={applyFilters}
-                        className="bg-blue-500 text-white p-2 rounded"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow transition"
                     >
                         Ieškoti
+                    </button>
+
+                    <button
+                        onClick={clearFilters}
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded-lg transition"
+                    >
+                        Šalinti filtrus
                     </button>
                 </div>
             </div>
@@ -138,33 +169,36 @@ export default function Home() {
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="relative p-4 border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition duration-300 animate-fadeIn"
+                        className="bg-white p-4 rounded-xl border border-gray-200 shadow hover:shadow-lg transition duration-300 animate-fadeIn"
                     >
-                        <div className="relative">
-                            <Link to={`/product/${product.id}`}>
-                                <img
-                                    src={`/images/${product.images?.[0]?.path || 'default.jpg'}`}
-                                    alt={product.title}
-                                    className="w-full h-56 object-contain rounded-md"
-                                />
-                            </Link>
-                        </div>
-                        <h2 className="mt-2 text-lg font-semibold text-gray-900 hover:text-blue-500 transition duration-300">
-                            {product.title}
-                        </h2>
-                        <div className="mt-2 text-gray-600">Kaina: {product.price} €</div>
-                        <div className="mt-1 text-gray-500">Įvertinimas: {product.rating}</div>
+                        <Link to={{ pathname: `/product/${product.id}`, search: searchParams.toString() }}>
+                            <img
+                                src={`/images/${product.images?.[0]?.path || "default.jpg"}`}
+                                alt={product.title}
+                                className="w-full h-56 object-contain rounded-lg mb-2"
+                            />
+                            <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition">
+                                {product.title}
+                            </h2>
+                        </Link>
+                        <p className="mt-1 text-lg font-semibold text-green-600">Kaina: {product.price} €</p>
                     </div>
                 ))}
             </div>
 
-            <div className="mt-6 text-center">
+            <div className="mt-10 text-center">
                 <button
                     onClick={loadMore}
                     disabled={loading || !hasMoreProducts}
-                    className={`flex items-center justify-center px-4 py-2 rounded-lg text-white ${hasMoreProducts ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"}`}
+                    className={`px-6 py-3 text-white text-lg rounded-lg font-semibold transition-colors duration-300 ${hasMoreProducts
+                            ? "bg-blue-600 hover:bg-blue-700"
+                            : "bg-gray-400 cursor-not-allowed"
+                        } flex items-center justify-center gap-2`}
                 >
-                    {loading ? "Loading..." : hasMoreProducts ? "Daugiau prekių" : "Daugiau prekių nėra"}
+                    {loading && (
+                        <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                    )}
+                    {loading ? "Įkeliama..." : hasMoreProducts ? "Daugiau prekių" : "Daugiau prekių nėra"}
                 </button>
             </div>
         </div>

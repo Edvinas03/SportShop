@@ -3,6 +3,7 @@ import axios from "axios";
 import { useStore } from "@/store";
 import { ICart } from "@/interfaces/ICart";
 import { Modal } from "@/pages/components/Modal";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
     const [cartItems, setCartItems] = useState<ICart[]>([]);
@@ -11,8 +12,8 @@ export default function Cart() {
     const [visibleModal, setVisibleModal] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
-
     const auth = useStore((state) => state.auth);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (auth?.isAuthenticated) {
@@ -46,7 +47,6 @@ export default function Cart() {
     const handleQuantityChange = async (cartId: number, newQuantity: number) => {
         try {
             const updatedItem = cartItems.find((item) => item.id === cartId);
-
             if (!updatedItem) return;
 
             setCartItems((prev) =>
@@ -75,81 +75,90 @@ export default function Cart() {
     };
 
     const handlePurchase = () => {
-        setModalTitle("Pirkimas");
-        setModalContent(<div>Paspaustas pirkti mygtukas!</div>);
-        setVisibleModal(true);
+        if (cartItems.length === 0) {
+            setModalTitle("Klaida");
+            setModalContent(<div>Jūsų krepšelis yra tuščias. Pridėkite bent vieną prekę.</div>);
+            setVisibleModal(true);
+            return;
+        }
+
+        navigate("/checkout");
     };
 
     const calculateTotal = () => {
-        return cartItems.reduce(
-            (sum, item) => sum + item.quantity * item.price,
-            0
-        ).toFixed(2);
+        return cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0).toFixed(2);
     };
 
-    if (loading) return <div>Įkeliamas pirkinių krepšelis...</div>;
-
-    if (!cartItems.length) return <div>Jūsų pirkinių krepšelis yra tuščias.</div>;
+    if (loading) return <div className="text-center text-lg mt-10">Įkeliamas pirkinių krepšelis...</div>;
+    if (!cartItems.length) return <div className="text-center text-lg mt-10">Jūsų pirkinių krepšelis yra tuščias.</div>;
 
     return (
-        <div className="container mx-auto p-8">
-            <h1 className="text-3xl font-bold mb-4">Pirkinių krepšelis</h1>
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">Pirkinių krepšelis</h1>
+
             {modalContent && (
-                <Modal
-                    visibleModal={visibleModal}
-                    title={modalTitle}
-                    setVisibleModal={setVisibleModal}
-                >
+                <Modal visibleModal={visibleModal} title={modalTitle} setVisibleModal={setVisibleModal}>
                     {modalContent}
                 </Modal>
             )}
-            <ul>
+
+            <ul className="space-y-6">
                 {cartItems.map((item) => (
-                    <li key={item.id} className="flex justify-between items-center mb-4 p-4 border">
-                        <div>
+                    <li
+                        key={item.id}
+                        className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 border rounded-xl shadow-sm bg-white"
+                    >
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
                             <img
                                 src={`/images/${item.imagePath}`}
                                 alt={item.title}
-                                className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 object-cover"
+                                className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-md border"
                             />
-                            <h2 className="text-xl font-semibold">{item.title}</h2>
-                            <div>
-                                <label htmlFor={`quantity-${item.id}`} className="mr-2">Kiekis:</label>
-                                <input
-                                    id={`quantity-${item.id}`}
-                                    type="number"
-                                    min="1"
-                                    value={item.quantity}
-                                    onChange={(e) =>
-                                        handleQuantityChange(
-                                            item.id,
-                                            parseInt(e.target.value, 10) || 1
-                                        )
-                                    }
-                                    className="border rounded p-1 w-16"
-                                />
+                            <div className="text-center sm:text-left">
+                                <h2 className="text-xl font-semibold text-gray-800">{item.title}</h2>
+                                <p className="text-sm text-gray-500 mt-1">Dydis: {item.size ?? "Nenurodytas"}</p>
+                                <p className="text-sm text-gray-500">Kaina: {item.price} €</p>
                             </div>
-                            <div>Kaina: {item.price} &#8364;</div>
                         </div>
-                        <button
-                            onClick={() => handleRemoveFromCart(item.id)}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        >
-                            Pašalinti
-                        </button>
+
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                            <label htmlFor={`quantity-${item.id}`} className="text-sm text-gray-700">
+                                Kiekis:
+                            </label>
+                            <input
+                                id={`quantity-${item.id}`}
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) =>
+                                    handleQuantityChange(
+                                        item.id,
+                                        parseInt(e.target.value, 10) || 1
+                                    )
+                                }
+                                className="w-20 px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+
+                            <button
+                                onClick={() => handleRemoveFromCart(item.id)}
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition"
+                            >
+                                Pašalinti
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
-            <div className="mt-6 text-right">
-                <h2 className="text-xl font-bold">Bendra suma: {calculateTotal()} &#8364;</h2>
+
+            <div className="mt-10 text-right">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Bendra suma: {calculateTotal()} €</h2>
                 <button
                     onClick={handlePurchase}
-                    className="bg-green-500 text-white px-6 py-2 mt-4 rounded hover:bg-green-600"
+                    className="bg-green-600 hover:bg-green-700 text-white text-lg px-6 py-3 rounded-md transition"
                 >
                     Pirkti
                 </button>
             </div>
-
         </div>
     );
 }

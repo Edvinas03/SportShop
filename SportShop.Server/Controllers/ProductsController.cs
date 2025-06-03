@@ -7,7 +7,7 @@ namespace SportShop.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController(IGetProductService getProductService) : ControllerBase
+    public class ProductsController(IGetProductService getProductService, ICreateProductService createProductService) : ControllerBase
     {
 
         [HttpGet]
@@ -35,6 +35,14 @@ namespace SportShop.Server.Controllers
         {
             var product = await getProductService.Get(id);
             return Ok(product);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
+        {
+            var id = await createProductService.Create(dto);
+            return CreatedAtAction(nameof(Get), new { id }, new { id });
         }
     }
 }

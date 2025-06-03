@@ -12,6 +12,7 @@ public class CartDto
     public decimal Price { get; set; }
     public string UserId { get; set; } = string.Empty;
     public bool IsBought { get; set; }
+    public string Size { get; set; } = string.Empty;
     public DateTime? CanceledAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
     public DateTime CreatedAt { get; set; }

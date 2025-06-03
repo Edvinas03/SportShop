@@ -1,44 +1,58 @@
-import { XMarkIcon } from '@heroicons/react/24/solid'
+import { XMarkIcon } from '@heroicons/react/24/solid';
 
-type ModalProps = { visibleModal: boolean; title: string; children: JSX.Element; setVisibleModal: (s: boolean) => void }
+type ModalProps = {
+    visibleModal: boolean;
+    title: string;
+    children: JSX.Element;
+    setVisibleModal: (s: boolean) => void;
+};
 
-export function Modal(props: ModalProps) {
-    const { visibleModal, title, children, setVisibleModal } = props
+export function Modal({ visibleModal, title, children, setVisibleModal }: ModalProps) {
+    if (!visibleModal) return null;
+
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            setVisibleModal(false);
+        }
+    };
 
     return (
         <>
-            {visibleModal ? (
-                <>
-                    <div
-                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed insert-0 z-50 outline-none focus:outline-none"
-                    >
-                        <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                            {/*content*/}
-                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                                {/*header*/}
-                                <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
-                                    <h3 className="text-xl font-semibold">
-                                        {title}
-                                    </h3>
-                                    <button
-                                        className=""
-                                        onClick={() => setVisibleModal(false)}
-                                    >
-                                        <XMarkIcon className="h-5 w-5 stroke-gray-400" />
-                                    </button>
-                                </div>
-                                {/*body*/}
-                                <div className="relative p-6 flex-auto">
-                                    <div className="my-4 text-blueGray-500 text-lg leading-relaxed">
-                                        {children}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            {/* Backdrop */}
+            <div
+                className="fixed inset-0 z-40 bg-black bg-opacity-50"
+                onClick={handleBackdropClick}
+            ></div>
+
+            {/* Modal */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                <div className="bg-white rounded-xl shadow-xl max-w-lg w-full animate-fadeIn">
+                    {/* Header */}
+                    <div className="flex justify-between items-center border-b px-6 py-4">
+                        <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+                        <button
+                            onClick={() => setVisibleModal(false)}
+                            className="text-gray-400 hover:text-gray-600 transition"
+                            aria-label="Uždaryti"
+                        >
+                            <XMarkIcon className="h-5 w-5" />
+                        </button>
                     </div>
-                    <div className="opacity-25 fixed insert-0 z-40 bg-black"></div>
-                </>
-            ) : null}
+
+                    {/* Body */}
+                    <div className="px-6 py-4 text-gray-700 text-base">{children}</div>
+
+                    {/* Footer */}
+                    <div className="px-6 py-3 border-t text-right">
+                        <button
+                            onClick={() => setVisibleModal(false)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+                        >
+                            Gerai
+                        </button>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
