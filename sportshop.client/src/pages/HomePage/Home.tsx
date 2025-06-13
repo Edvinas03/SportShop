@@ -22,6 +22,8 @@ export default function Home() {
     const [localMinPrice, setLocalMinPrice] = useState(minPrice || "");
     const [localMaxPrice, setLocalMaxPrice] = useState(maxPrice || "");
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const fetchProducts = async (currentPage: number) => {
         try {
             let query = `products?page=${currentPage}&pageSize=${pageSize}`;
@@ -173,7 +175,11 @@ export default function Home() {
                     >
                         <Link to={{ pathname: `/product/${product.id}`, search: searchParams.toString() }}>
                             <img
-                                src={`/images/${product.images?.[0]?.path || "default.jpg"}`}
+                                src={
+                                    product.images?.[0]?.path
+                                        ? `${backendUrl}/images/${product.images[0].path}`
+                                        : `${backendUrl}/images/default.jpg`
+                                }
                                 alt={product.title}
                                 className="w-full h-56 object-contain rounded-lg mb-2"
                             />

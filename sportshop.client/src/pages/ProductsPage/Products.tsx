@@ -24,6 +24,7 @@ export default function ProductDetails() {
     const location = useLocation();
 
     const auth = useStore((state) => state.auth);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     function getGenderDisplay(gender: string | null | undefined): string {
         switch (gender) {
@@ -133,7 +134,7 @@ export default function ProductDetails() {
                     <div className="relative w-full h-96 mb-4 rounded-lg overflow-hidden border shadow-md">
                         {selectedImage ? (
                             <img
-                                src={`/images/${selectedImage}`}
+                                src={`${backendUrl}/images/${selectedImage}`}
                                 alt={product.title}
                                 className="w-full h-full object-contain bg-white"
                             />
@@ -170,7 +171,7 @@ export default function ProductDetails() {
                             product.images.map((image, idx) => (
                                 <img
                                     key={idx}
-                                    src={`/images/${image.path}`}
+                                    src={`${backendUrl}/images/${image.path}`}
                                     alt={`${product.title} image ${idx + 1}`}
                                     className={`w-24 h-24 object-cover rounded-lg cursor-pointer transition-all duration-200 hover:scale-105 shadow-md ${selectedImage === image.path ? "ring-4 ring-blue-400" : "ring-1 ring-gray-200"}`}
                                     onClick={() => {

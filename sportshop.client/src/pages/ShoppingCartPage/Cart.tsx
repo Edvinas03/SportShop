@@ -14,6 +14,7 @@ export default function Cart() {
     const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
     const auth = useStore((state) => state.auth);
     const navigate = useNavigate();
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
         if (auth?.isAuthenticated) {
@@ -110,7 +111,7 @@ export default function Cart() {
                     >
                         <div className="flex flex-col sm:flex-row items-center gap-4">
                             <img
-                                src={`/images/${item.imagePath}`}
+                                src={`${backendUrl}/images/${item.imagePath}`}
                                 alt={item.title}
                                 className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-md border"
                             />

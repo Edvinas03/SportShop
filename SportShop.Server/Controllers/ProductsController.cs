@@ -39,7 +39,7 @@ namespace SportShop.Server.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
+        public async Task<IActionResult> Create([FromForm] CreateProductFormDto dto)
         {
             var id = await createProductService.Create(dto);
             return CreatedAtAction(nameof(Get), new { id }, new { id });

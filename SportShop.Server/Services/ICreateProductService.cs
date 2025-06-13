@@ -1,4 +1,9 @@
-public interface ICreateProductService
+using SportShop.Server.Models.DTOs;
+
+namespace SportShop.Server.Services
 {
-    Task<short> Create(CreateProductDto dto);
+    public interface ICreateProductService
+    {
+        Task<short> Create(CreateProductFormDto dto);
+    }
 }
