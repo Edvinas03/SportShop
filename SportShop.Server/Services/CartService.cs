@@ -76,16 +76,6 @@ public class CartService(AppDbContext context) : ICartService
             query = query.Where(c => c.IsBought);
         }
 
-        /*if (dto.IsCanceled)
-        {
-            query = query.Where(c => c.CanceledAt != null);
-        }
-
-        if (dto.IsDelivered)
-        {
-            query = query.Where(c => c.DeliveredAt != null);
-        }*/
-
         var cartItems = await query.ToListAsync();
 
         return cartItems.Select(c => new CartDto

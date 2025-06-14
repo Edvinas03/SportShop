@@ -44,5 +44,26 @@ namespace SportShop.Server.Controllers
             var id = await createProductService.Create(dto);
             return CreatedAtAction(nameof(Get), new { id }, new { id });
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromForm] CreateProductFormDto dto)
+        {
+            await createProductService.Update(id, dto);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await createProductService.Delete(id);
+            return Ok();
+        }
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllWithoutPagination()
+        {
+            var products = await getProductService.GetAll();
+            return Ok(products);
+        }
     }
 }

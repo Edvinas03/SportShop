@@ -9,7 +9,7 @@ export function useAuth() {
     const logoutHandler = async () => {
         await postApi('authentication/logout', {});
         setAuth(undefined);
-        navigate('auth/signin'); //Redirect to the login page
+        navigate('auth/signin');
     };
 
     return { logoutHandler, auth, userId: auth?.userId }

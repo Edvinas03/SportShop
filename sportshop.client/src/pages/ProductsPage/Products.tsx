@@ -255,7 +255,7 @@ export default function ProductDetails() {
                         </button>
 
                         <img
-                            src={`/images/${selectedImage}`}
+                            src={`${backendUrl}/images/${selectedImage}`}
                             alt={product.title}
                             className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-lg"
                         />

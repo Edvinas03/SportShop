@@ -31,10 +31,12 @@ export function Layout() {
     return (
         <div className="container mx-auto flex flex-col min-h-screen gap-y-6 font-sans">
             <header className="relative bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white p-6 flex flex-col md:flex-row md:justify-between items-center gap-y-3 shadow-lg overflow-hidden backdrop-blur-sm bg-opacity-80">
-                <div className="flex items-center gap-2 text-3xl font-extrabold tracking-wide select-none cursor-default z-10 hover:text-yellow-300 transition-shadow duration-300 ease-in-out hover:drop-shadow-[0_0_10px_rgba(252,211,77,0.7)]">
+                <Link
+                    to="/"
+                    className="flex items-center gap-2 text-3xl font-extrabold tracking-wide select-none cursor-default z-10 hover:text-yellow-300 transition-shadow duration-300 ease-in-out hover:drop-shadow-[0_0_10px_rgba(252,211,77,0.7)]">
                     <BoltIcon className="h-8 w-8 text-yellow-400 animate-pulse-slow" />
                     Sportukas
-                </div>
+                </Link>
 
                 <nav className="z-10">
                     <ul className="flex flex-wrap justify-center md:justify-end gap-6 items-center text-lg font-medium">

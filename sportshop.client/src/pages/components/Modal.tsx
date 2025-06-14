@@ -18,16 +18,16 @@ export function Modal({ visibleModal, title, children, setVisibleModal }: ModalP
 
     return (
         <>
-            {/* Backdrop */}
+
             <div
                 className="fixed inset-0 z-40 bg-black bg-opacity-50"
                 onClick={handleBackdropClick}
             ></div>
 
-            {/* Modal */}
+
             <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                 <div className="bg-white rounded-xl shadow-xl max-w-lg w-full animate-fadeIn">
-                    {/* Header */}
+
                     <div className="flex justify-between items-center border-b px-6 py-4">
                         <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
                         <button
@@ -39,10 +39,8 @@ export function Modal({ visibleModal, title, children, setVisibleModal }: ModalP
                         </button>
                     </div>
 
-                    {/* Body */}
                     <div className="px-6 py-4 text-gray-700 text-base">{children}</div>
 
-                    {/* Footer */}
                     <div className="px-6 py-3 border-t text-right">
                         <button
                             onClick={() => setVisibleModal(false)}
