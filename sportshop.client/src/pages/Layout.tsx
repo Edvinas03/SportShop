@@ -106,7 +106,7 @@ export function Layout() {
             </main>
 
             <footer className="bg-blue-900 text-blue-100 text-center py-4 mt-6 rounded-t-lg shadow-inner select-none">
-                <div className="text-sm font-light">© 2025 Sport Shop | All rights reserved</div>
+                <div className="text-sm font-light">© 2025 Sportukas | All rights reserved</div>
             </footer>
 
             {showButton && (
